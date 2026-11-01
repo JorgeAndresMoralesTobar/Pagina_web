@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Distribuciones Alumax JT | Catálogo Ferretero & Suministros Industriales</title>
+  <title>Alumax JT | Empaques, O-rings, PVC y ferretería al por mayor</title>
   <meta name="description" content="Distribuciones Alumax JT. Venta y distribución mayorista de empaques, sellos O-Rings, plomería PVC, herrajes de seguridad y ferretería industrial." />
 
   <!-- Google Fonts: Plus Jakarta Sans & Syne -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -18,8 +18,8 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
-            display: ['"Syne"', 'sans-serif'],
+            sans: ['"Instrument Sans"', 'system-ui', 'sans-serif'],
+            display: ['"Bricolage Grotesque"', 'sans-serif'],
           },
           colors: {
             brand: {
@@ -43,543 +43,228 @@
 
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="apple.css" />
 </head>
-<body class="bg-[#F8FAFC] text-slate-900 antialiased selection:bg-blue-600 selection:text-white">
+<body class="antialiased selection:bg-blue-600 selection:text-white">
 
-  <!-- 1. VIP ANNOUNCEMENT BAR (Amazon / El Corte Inglés Style) -->
-  <div class="bg-slate-950 text-white text-[11px] md:text-xs py-2 px-4 border-b border-slate-800">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <span class="bg-amber-500 text-slate-950 font-extrabold px-1.5 py-0.5 rounded text-[10px] tracking-wider uppercase">CLIENTES ALUMAX JT</span>
-        <span class="text-slate-300">Ventas y distribución al por mayor a nivel nacional</span>
-      </div>
+  <div class="ax" id="top">
 
-      <div class="flex items-center gap-4 text-slate-400">
-        <span class="flex items-center gap-1 hover:text-white transition-colors cursor-pointer">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
-          Garantía de Fábrica
-        </span>
-        <span class="hidden md:flex items-center gap-1 hover:text-white transition-colors cursor-pointer">
-          <i data-lucide="truck" class="w-3.5 h-3.5 text-blue-400"></i>
-          Envíos Nacionales & Internacionales
-        </span>
-        <button onclick="app.openRegionModal()" class="border-l border-slate-800 pl-3 flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer group" title="Cambiar País y Moneda">
-          <i data-lucide="globe" class="w-3.5 h-3.5 text-blue-400 group-hover:rotate-45 transition-transform"></i>
-          <span class="global-region-label text-white font-semibold">🇨🇴 CO • COP ($)</span>
+  <!-- Navegación -->
+  <header class="ax-nav">
+    <div class="ax-nav__in">
+      <a href="#top" class="ax-brand" aria-label="Alumax JT, inicio">
+        <span class="ax-brand__mark" aria-hidden="true"></span>Alumax JT
+      </a>
+
+      <nav class="ax-links" aria-label="Principal">
+        <a href="#catalogo" onclick="app.setCategory('todas')">Catálogo</a>
+        <a href="#catalogo" onclick="app.setCategory('sellos-orings')">Sellos y O-rings</a>
+        <a href="#catalogo" onclick="app.setCategory('plomeria-pvc')">Plomería y PVC</a>
+        <a href="#catalogo" onclick="app.setCategory('herrajes-seguridad')">Herrajes</a>
+        <a href="#catalogo" onclick="app.setCategory('ferreteria-industrial')">Ferretería</a>
+        <a href="#flash-deals" class="ax-links__flash">Ofertas flash</a>
+      </nav>
+
+      <div class="ax-tools">
+        <label class="ax-search">
+          <i data-lucide="search"></i>
+          <input id="search-input" type="text" placeholder="Buscar" aria-label="Buscar productos" autocomplete="off" />
+        </label>
+
+        <button class="ax-icon-btn ax-mobile-trigger" aria-label="Buscar"
+          onclick="document.getElementById('mobile-search-bar').classList.toggle('hidden')">
+          <i data-lucide="search"></i>
         </button>
-        <button onclick="app.isAdmin() ? app.logoutAdmin() : app.loginAdmin()" class="admin-only hidden text-xs text-slate-400 hover:text-slate-600">
-          🔑 Acceso Admin
+
+        <button class="ax-region" onclick="app.openRegionModal()" title="Cambiar país y moneda">
+          <span class="global-region-label">🇨🇴 CO • COP ($)</span>
+        </button>
+
+        <button class="ax-icon-btn" onclick="app.openWishlistModal()" aria-label="Lista de deseos">
+          <i data-lucide="heart"></i>
+          <span class="wishlist-count-badge ax-badge hidden">0</span>
+        </button>
+
+        <button class="ax-icon-btn" onclick="app.openCart()" aria-label="Abrir la cesta">
+          <i data-lucide="shopping-bag"></i>
+          <span class="cart-count-badge ax-badge hidden">0</span>
+        </button>
+
+        <button class="ax-icon-btn" onclick="app.isAdmin() ? app.logoutAdmin() : app.loginAdmin()"
+          aria-label="Acceso de administrador" title="Acceso de administrador">
+          <i data-lucide="key-round"></i>
         </button>
       </div>
     </div>
-  </div>
-
-  <!-- 2. STICKY MAIN NAVIGATION (Nike & Apple Level Minimalism) -->
-  <header class="sticky top-0 z-40 glass-nav transition-all duration-300 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-20 gap-4">
-        
-        <!-- Brand Logo -->
-        <div class="flex items-center gap-8">
-          <a href="#" class="flex items-center gap-2.5 group">
-            <div class="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
-              <i data-lucide="layers" class="w-5 h-5 text-white"></i>
-            </div>
-            <div class="flex flex-col">
-              <span class="font-display font-extrabold text-2xl tracking-tighter text-slate-950 group-hover:text-blue-600 transition-colors">ALUMAX JT</span>
-              <span class="text-[9px] tracking-[0.2em] uppercase font-bold text-slate-400 -mt-1">DISTRIBUCIONES ALUMAX JT</span>
-            </div>
-          </a>
-
-          <!-- Desktop Navigation Links -->
-          <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold text-slate-600">
-            <a href="#catalogo" onclick="app.setCategory('todas')" class="hover:text-blue-600 transition-colors">Catálogo</a>
-            <a href="#catalogo" onclick="app.setCategory('plomeria-pvc')" class="hover:text-blue-600 transition-colors">Plomería & PVC</a>
-            <a href="#catalogo" onclick="app.setCategory('sellos-orings')" class="hover:text-blue-600 transition-colors">Sellos & O-Rings</a>
-            <a href="#catalogo" onclick="app.setCategory('herrajes-seguridad')" class="hover:text-blue-600 transition-colors">Herrajes & Manijas</a>
-            <a href="#catalogo" onclick="app.setCategory('ferreteria-industrial')" class="hover:text-blue-600 transition-colors">Ferretería</a>
-            <a href="#flash-deals" class="text-rose-600 hover:text-rose-700 flex items-center gap-1 font-bold">
-              <i data-lucide="zap" class="w-3.5 h-3.5 fill-rose-600"></i>
-              Ofertas Flash
-            </a>
-          </nav>
-        </div>
-
-        <!-- Global Search Bar (Amazon / Apple Omnibar style) -->
-        <div class="flex-1 max-w-md hidden md:block">
-          <div class="relative">
-            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-            <input 
-              id="search-input"
-              type="text" 
-              placeholder="Buscar por nombre (ej: Nivelador, O-Ring, Manija, Tubo, Codo...)" 
-              class="w-full pl-10 pr-10 py-2.5 bg-slate-100 hover:bg-slate-200/70 focus:bg-white text-xs md:text-sm text-slate-900 rounded-full border border-transparent focus:border-slate-300 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all shadow-inner"
-            />
-            <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400 bg-slate-200/80 px-1.5 py-0.5 rounded border border-slate-300">
-              ⌘K
-            </span>
-          </div>
-        </div>
-
-        <!-- Right Quick Actions -->
-        <div class="flex items-center gap-2 sm:gap-3">
-          
-          <!-- Mobile Search Trigger -->
-          <button 
-            onclick="document.getElementById('mobile-search-bar').classList.toggle('hidden')" 
-            class="md:hidden p-2.5 rounded-full hover:bg-slate-100 text-slate-700 transition-colors"
-            title="Buscar"
-          >
-            <i data-lucide="search" class="w-5 h-5"></i>
-          </button>
-
-          <!-- Wishlist Trigger -->
-          <button 
-            onclick="app.openWishlistModal()"
-            class="relative p-2.5 rounded-full hover:bg-slate-100 text-slate-700 transition-colors"
-            title="Lista de deseos"
-          >
-            <i data-lucide="heart" class="w-5 h-5"></i>
-            <span class="wishlist-count-badge hidden absolute top-1 right-1 w-4 h-4 bg-rose-600 text-white text-[10px] font-black rounded-full flex items-center justify-center ring-2 ring-white">
-              0
-            </span>
-          </button>
-
-          <!-- Cart Trigger (Grand Slide-Over) -->
-          <button 
-            onclick="app.openCart()"
-            class="relative flex items-center gap-2.5 pl-3.5 pr-4 py-2.5 bg-slate-950 hover:bg-blue-600 text-white rounded-full font-bold text-xs md:text-sm shadow-md hover:shadow-blue-500/30 transition-all duration-200 active:scale-95"
-          >
-            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">Cesta</span>
-            <span class="cart-count-badge hidden bg-blue-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
-              0
-            </span>
-          </button>
-          <!-- BOTÓN ACCESO ADMIN VISIBLE Y DESTACADO -->
-          <button 
-            onclick="app.isAdmin() ? app.logoutAdmin() : app.loginAdmin()" 
-            class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-full transition-all border border-slate-200 flex items-center gap-1.5 shadow-sm"
-            title="Iniciar o cerrar sesión de administrador"
-          >
-            <span>🔑</span>
-            <span class="hidden lg:inline">Acceso Admin</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Mobile Search Bar (Collapsible) -->
-      <div id="mobile-search-bar" class="hidden pb-4 md:hidden">
-        <div class="relative">
-          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-          <input 
-            type="text" 
-            oninput="app.setSearch(this.value)" 
-            placeholder="Buscar productos..." 
-            class="w-full pl-10 pr-4 py-2.5 bg-slate-100 text-sm text-slate-900 rounded-full border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      </div>
+    <div id="mobile-search-bar" class="ax-mobile-search hidden">
+      <input type="text" oninput="app.setSearch(this.value)" placeholder="Buscar productos" aria-label="Buscar productos" />
     </div>
   </header>
 
-  <!-- 3. HERO SHOWCASE (Nike Impact & Grand Luxury Aesthetic) -->
-  <section class="relative hero-gradient pt-8 pb-16 md:pt-14 md:pb-24 overflow-hidden border-b border-slate-200/60">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        
-        <!-- Hero Text Content -->
-        <div class="lg:col-span-7 flex flex-col items-start">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm text-xs font-bold text-slate-800 mb-6 animate-pulse-subtle">
-            <span class="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
-            <span>CATÁLOGO OFICIAL 2026 // +420 REFERENCIAS EN STOCK</span>
-          </div>
+  <!-- Portada -->
+  <section class="ax-hero">
+    <div class="ax-hero__copy">
+      <h1>Lo que sella, conecta y asegura.</h1>
+      <p>Empaques, O-rings, tubería PVC, herrajes y ferretería industrial. Venta al por mayor.</p>
+      <div class="ax-hero__cta">
+        <a href="#catalogo" class="ax-btn ax-btn--blue">Ver el catálogo</a>
+        <a href="#flash-deals" class="ax-btn ax-btn--ghost">Ofertas flash</a>
+        <button onclick="app.openAddProductModal()" class="admin-only hidden ax-btn ax-btn--ghost">Añadir producto</button>
+      </div>
+    </div>
+    <div class="ax-rings" aria-hidden="true">
+      <div class="ax-ring"></div>
+      <div class="ax-ring ax-ring--b"></div>
+      <div class="ax-ring ax-ring--c"></div>
+    </div>
+  </section>
 
-          <h1 class="font-display text-4xl sm:text-6xl xl:text-7xl font-extrabold tracking-tight text-slate-950 leading-[1.08] mb-6">
-            SUMINISTROS <br />
-            <span class="brand-gradient-text">DE MÁXIMA CALIDAD.</span>
-          </h1>
-
-          <p class="text-base sm:text-lg text-slate-600 max-w-xl font-normal leading-relaxed mb-8">
-            Catálogo completo de ferretería, empaques, conexiones y suministros industriales. Sellos O-Rings, válvulas y tubería PVC, herrajes de seguridad y herramientas con despacho prioritario.
-          </p>
-
-          <!-- CTAs -->
-          <div class="flex flex-wrap items-center gap-4 w-full sm:w-auto">
-            <a 
-              href="#catalogo" 
-              class="w-full sm:w-auto px-8 py-4 bg-slate-950 hover:bg-blue-600 text-white rounded-2xl font-bold text-sm shadow-xl hover:shadow-blue-500/25 transition-all duration-300 flex items-center justify-center gap-2 group"
-            >
-              <span>Explorar Catálogo (+420 Artículos)</span>
-              <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
-            </a>
-
-            <button 
-              onclick="app.openAddProductModal()" 
-              class="admin-only hidden w-full sm:w-auto px-7 py-4 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 rounded-2xl font-bold text-sm shadow-sm hover:shadow transition-all flex items-center justify-center gap-2"
-            >
-              <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i>
-              <span>Añadir Nuevo Producto</span>
-            </button>
-          </div>
-
-          <!-- Trust Badges Under Hero -->
-          <div class="grid grid-cols-3 gap-6 pt-10 mt-10 border-t border-slate-200/80 w-full max-w-lg">
-            <div>
-              <div class="font-display font-extrabold text-2xl text-slate-950">420+</div>
-              <div class="text-xs text-slate-500 font-medium">Productos Activos</div>
-            </div>
-            <div>
-              <div class="font-display font-extrabold text-2xl text-slate-950">100%</div>
-              <div class="text-xs text-slate-500 font-medium">Stock Verificado</div>
-            </div>
-            <div>
-              <div class="font-display font-extrabold text-2xl text-slate-950">24h</div>
-              <div class="text-xs text-slate-500 font-medium">Despacho Rápido</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hero Visual Card (Nike Velocity Preview) -->
-        <div class="lg:col-span-5 relative">
-          <div class="relative mx-auto max-w-md lg:max-w-none">
-            <!-- Glow background -->
-            <div class="absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-3xl blur-2xl -z-10"></div>
-            
-            <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 relative overflow-hidden group">
-              <div class="flex items-center justify-between mb-4">
-                <span class="badge-flash px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1">
-                  <i data-lucide="flame" class="w-3.5 h-3.5"></i> DESTACADO DE LA SEMANA
-                </span>
-                <span class="text-xs font-bold text-slate-400">STOCK LIMITADO</span>
-              </div>
-
-              <!-- Hero Product Photo -->
-              <div class="relative aspect-square flex items-center justify-center py-4">
-                <img 
-                  src="https://images.unsplash.com/photo-1558441719-8b489c63f7d1?auto=format&fit=crop&w=900&q=80" 
-                  alt="Rin Trailer Industrial" 
-                  class="w-full h-full object-contain mix-blend-multiply drop-shadow-2xl group-hover:scale-105 group-hover:-rotate-3 transition-transform duration-700 ease-out"
-                />
-              </div>
-
-              <!-- Details card footer -->
-              <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <div>
-                  <h3 class="font-bold text-lg text-slate-900">Rin Trailer Reforzado</h3>
-                  <div class="flex items-center gap-2 mt-0.5">
-                    <span id="hero-product-price" class="text-xl font-extrabold text-blue-600 font-display">$ 87.707</span>
-                    <span id="hero-product-oldprice" class="text-xs text-slate-400 line-through">$ 105.248</span>
-                    <span class="text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">-17%</span>
-                  </div>
-                </div>
-
-                <button 
-                  onclick="app.openQuickView('art-001')" 
-                  class="px-4 py-2.5 bg-slate-950 hover:bg-blue-600 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5"
-                >
-                  <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                  Detalles
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
+  <!-- Líneas de producto -->
+  <section class="ax-section ax-section--alu" id="lineas">
+    <div class="ax-wrap">
+      <div class="ax-section__head">
+        <h2 class="ax-h2">Cinco líneas.<br />Un solo proveedor.</h2>
+        <p class="ax-lede">Elige una línea y mira todo lo que tenemos.</p>
+      </div>
+      <div class="ax-tiles">
+        <a href="#catalogo" onclick="app.setCategory('sellos-orings')" class="ax-tile ax-tile--dark ax-tile--a ax-tile--big">
+          <span class="ax-tile__ring" aria-hidden="true"></span>
+          <div><h3>Sellos y O-rings</h3><p>Anillos y empaques en todas las medidas.</p></div>
+          <span class="ax-tile__go">Ver productos</span>
+        </a>
+        <a href="#catalogo" onclick="app.setCategory('plomeria-pvc')" class="ax-tile ax-tile--b">
+          <div><h3>Plomería y PVC</h3><p>Tubería, uniones y accesorios.</p></div>
+          <span class="ax-tile__go">Ver productos</span>
+        </a>
+        <a href="#catalogo" onclick="app.setCategory('herrajes-seguridad')" class="ax-tile ax-tile--blue ax-tile--c">
+          <div><h3>Herrajes y manijas</h3><p>Seguridad para puertas y ventanas.</p></div>
+          <span class="ax-tile__go">Ver productos</span>
+        </a>
+        <a href="#catalogo" onclick="app.setCategory('ferreteria-industrial')" class="ax-tile ax-tile--d">
+          <div><h3>Ferretería y construcción</h3><p>Niveladores, tornillería y piezas de obra.</p></div>
+          <span class="ax-tile__go">Ver productos</span>
+        </a>
+        <a href="#catalogo" onclick="app.setCategory('herramientas-agro')" class="ax-tile ax-tile--dark ax-tile--e">
+          <div><h3>Herramientas y taller</h3><p>Para el taller y para el campo.</p></div>
+          <span class="ax-tile__go">Ver productos</span>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- 4. TRUST VALUE PILLARS (Amazon & El Corte Inglés Assurance) -->
-  <section class="bg-white py-8 border-b border-slate-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
-        
-        <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-            <i data-lucide="zap" class="w-6 h-6"></i>
+  <!-- Ofertas flash -->
+  <section id="flash-deals" class="ax-flash">
+    <h2>Ofertas flash.</h2>
+    <p>Descuentos de hasta 30% mientras el reloj siga corriendo.</p>
+    <div class="ax-clock" role="timer" aria-label="Tiempo restante de las ofertas">
+      <div class="ax-clock__unit"><span id="cd-hours" class="ax-clock__num">14</span><span class="ax-clock__label">horas</span></div>
+      <span class="ax-clock__sep" aria-hidden="true">:</span>
+      <div class="ax-clock__unit"><span id="cd-mins" class="ax-clock__num">42</span><span class="ax-clock__label">minutos</span></div>
+      <span class="ax-clock__sep" aria-hidden="true">:</span>
+      <div class="ax-clock__unit"><span id="cd-secs" class="ax-clock__num">15</span><span class="ax-clock__label">segundos</span></div>
+    </div>
+    <div><a href="#catalogo" onclick="app.setCategory('todas')" class="ax-btn ax-btn--blue">Ver el catálogo</a></div>
+  </section>
+
+  <!-- Producto destacado -->
+  <section class="ax-section" style="padding-bottom:0">
+    <div class="ax-wrap">
+      <div class="ax-spot">
+        <div class="ax-spot__img">
+          <img src="https://images.unsplash.com/photo-1558441719-8b489c63f7d1?auto=format&fit=crop&w=900&q=80" alt="Rin Trailer reforzado" />
+        </div>
+        <div class="ax-spot__copy">
+          <small>Destacado de la semana</small>
+          <h2 class="ax-h2">Rin Trailer reforzado.</h2>
+          <div class="ax-price">
+            <strong id="hero-product-price">$ 87.707</strong>
+            <s id="hero-product-oldprice">$ 105.248</s>
+            <em>-17%</em>
           </div>
-          <div>
-            <h4 class="text-sm font-bold text-slate-900">Envío Express 24h</h4>
-            <p class="text-xs text-slate-500">Gratis en pedidos superiores a 500.000$</p>
+          <div class="ax-spot__actions">
+            <button onclick="app.quickAddToCart('art-001')" class="ax-btn ax-btn--blue">Añadir a la cesta</button>
+            <button onclick="app.openQuickView('art-001')" class="ax-btn ax-btn--dark">Ver detalles</button>
           </div>
         </div>
-
-        <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-            <i data-lucide="shield-check" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h4 class="text-sm font-bold text-slate-900">Soporte Directo</h4>
-            <p class="text-xs text-slate-500">Asistencia técnica 24/7</p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-            <i data-lucide="shield-check" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h4 class="text-sm font-bold text-slate-900">Productos 100% certificados y probado</h4>
-            <p class="text-xs text-slate-500">Calidad máxima garantizada por el fabricante</p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-3.5">
-          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-            <i data-lucide="lock" class="w-6 h-6"></i>
-          </div>
-          <div>
-            <h4 class="text-sm font-bold text-slate-900">Pago 100% Blindado</h4>
-            <p class="text-xs text-slate-500">Apple Pay, Visa, Klarna a 3 plazos</p>
-          </div>
-        </div>
-
       </div>
     </div>
   </section>
 
-  <!-- 5. FLASH DEALS BANNER (Amazon Lightning Deals Countdown) -->
-  <section id="flash-deals" class="py-12 bg-slate-950 text-white relative overflow-hidden">
-    <!-- Ambient light -->
-    <div class="absolute -right-20 -top-20 w-80 h-80 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-6 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-xl">
-        
-        <div class="flex items-center gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-rose-600/20 border border-rose-500/30 text-rose-500 flex items-center justify-center shrink-0 animate-pulse">
-            <i data-lucide="zap" class="w-7 h-7"></i>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="text-rose-500 font-extrabold uppercase text-xs tracking-wider">OFERTAS FLASH DEL DÍA</span>
-              <span class="text-[10px] bg-rose-500/20 text-rose-300 font-bold px-2 py-0.5 rounded-full">DESCUENTOS HASTA -30%</span>
-            </div>
-            <h3 class="text-xl md:text-2xl font-extrabold font-display text-white mt-1">Unidades Limitadas a Precio Especial</h3>
-            <p class="text-xs text-slate-400 mt-0.5">Precios promocionales válidos únicamente hasta que el temporizador llegue a cero.</p>
-          </div>
+  <!-- Catálogo -->
+  <main id="catalogo" class="ax-section">
+    <div class="ax-wrap">
+      <div class="ax-catalog__bar">
+        <div>
+          <h2 class="ax-h2">Catálogo.</h2>
+          <p id="products-count" class="ax-catalog__count">Cargando catálogo...</p>
         </div>
-
-        <!-- Live Countdown Timer -->
-        <div class="flex items-center gap-3">
-          <div class="flex flex-col items-center">
-            <div id="cd-hours" class="w-14 h-14 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center font-display font-black text-2xl text-white shadow-inner">
-              14
-            </div>
-            <span class="text-[10px] text-slate-400 uppercase font-semibold mt-1">Horas</span>
-          </div>
-          <span class="text-2xl font-black text-slate-600 -mt-4">:</span>
-          <div class="flex flex-col items-center">
-            <div id="cd-mins" class="w-14 h-14 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center font-display font-black text-2xl text-white shadow-inner">
-              42
-            </div>
-            <span class="text-[10px] text-slate-400 uppercase font-semibold mt-1">Minutos</span>
-          </div>
-          <span class="text-2xl font-black text-slate-600 -mt-4">:</span>
-          <div class="flex flex-col items-center">
-            <div id="cd-secs" class="w-14 h-14 rounded-2xl bg-rose-600/20 border border-rose-500/40 flex items-center justify-center font-display font-black text-2xl text-rose-400 shadow-inner">
-              15
-            </div>
-            <span class="text-[10px] text-rose-400 uppercase font-semibold mt-1">Segundos</span>
-          </div>
+        <div class="ax-tools-row">
+          <label class="ax-select">Ordenar
+            <select id="sort-select">
+              <option value="featured">Recomendados</option>
+              <option value="deals">Mayor descuento</option>
+              <option value="bestseller">Más vendidos</option>
+              <option value="rating">Mejor valorados</option>
+              <option value="price-asc">Precio: de menor a mayor</option>
+              <option value="price-desc">Precio: de mayor a menor</option>
+            </select>
+          </label>
+          <button onclick="app.resetFilters()" class="ax-chip" title="Quitar filtros y búsqueda">Limpiar filtros</button>
+          <button onclick="app.openAddProductModal()" class="admin-only hidden ax-chip">Añadir producto</button>
+          <button onclick="app.openAdminModal()" class="admin-only hidden ax-chip">Gestionar catálogo</button>
         </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- 6. MAIN CATALOG & FILTER TOOLBAR -->
-  <main id="catalogo" class="py-12 md:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    
-    <!-- Header with title & sort controls -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-      <div>
-        <div class="flex items-center gap-2 text-xs font-bold text-blue-600 uppercase tracking-widest mb-1">
-          <i data-lucide="sparkles" class="w-4 h-4"></i> Catálogo Completo 2026
-        </div>
-        <h2 class="text-3xl md:text-4xl font-extrabold font-display text-slate-950">
-          Explora la Colección
-        </h2>
-        <p id="products-count" class="text-xs text-slate-500 mt-1 font-medium">
-          Cargando catálogo...
-        </p>
       </div>
 
-      <!-- Sorting & Filtering Toolbar -->
-      <div class="flex items-center gap-3 flex-wrap">
-        <div class="flex items-center gap-2 bg-white px-3.5 py-2 rounded-2xl border border-slate-200 shadow-sm text-xs text-slate-600">
-          <i data-lucide="arrow-down-up" class="w-3.5 h-3.5 text-slate-400"></i>
-          <span class="font-semibold text-slate-500">Ordenar por:</span>
-          <select 
-            id="sort-select" 
-            class="bg-transparent font-bold text-slate-900 focus:outline-none cursor-pointer"
-          >
-            <option value="featured">Recomendados</option>
-            <option value="deals">Mayor Descuento</option>
-            <option value="bestseller">Más Vendidos</option>
-            <option value="rating">Mejor Valorados</option>
-            <option value="price-asc">Precio: Menor a Mayor</option>
-            <option value="price-desc">Precio: Mayor a Menor</option>
-          </select>
-        </div>
+      <div class="ax-pills"><div id="category-pills-container" style="display:flex;gap:8px"></div></div>
 
-        <button 
-          onclick="app.resetFilters()" 
-          class="px-4 py-2 bg-white hover:bg-slate-50 text-slate-600 text-xs font-bold rounded-2xl border border-slate-200 transition-colors shadow-sm"
-          title="Restablecer filtros"
-        >
-          Limpiar Filtros
-        </button>
-
-        <!-- Admin & Product Management Actions -->
-        <button 
-          onclick="app.openAddProductModal()" 
-          class="admin-only hidden px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-2xl shadow-sm transition-all flex items-center gap-1.5"
-          title="Añadir un nuevo producto al catálogo"
-        >
-          <i data-lucide="plus-circle" class="w-4 h-4"></i>
-          <span>Añadir Producto</span>
-        </button>
-
-        <button 
-          onclick="app.openAdminModal()" 
-          class="admin-only hiddenpx-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-2xl shadow-sm transition-all flex items-center gap-1.5"
-          title="Gestión de fotos, catálogo y exportación"
-        >
-          <i data-lucide="settings" class="w-4 h-4"></i>
-          <span>Gestionar Catálogo</span>
-        </button>
-      </div>
+      <div id="products-grid" class="ax-grid"></div>
     </div>
-
-    <!-- Category Pills Bar (Horizontal Scrollable) -->
-    <div class="mb-10 overflow-x-auto pb-3 -mx-4 px-4 sm:mx-0 sm:px-0">
-      <div id="category-pills-container" class="flex items-center gap-2.5 min-w-max">
-        <!-- Rendered dynamically -->
-      </div>
-    </div>
-
-    <!-- Products Grid -->
-    <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-7">
-      <!-- Rendered dynamically by app.js -->
-    </div>
-
   </main>
 
-  <!-- 7. VIP MEMBERSHIP CLUB (Nike Membership / El Corte Inglés Fidelización) -->
-  <section class="py-16 bg-slate-900 text-white relative overflow-hidden border-t border-slate-800">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-      <span class="badge-gold px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider inline-flex items-center gap-1.5 mb-4">
-        <i data-lucide="crown" class="w-4 h-4"></i> CLUB CLIENTES ALUMAX JT
-      </span>
-      <h2 class="text-3xl md:text-5xl font-extrabold font-display tracking-tight text-white mb-4">
-        Únete a Distribuciones Alumax JT
-      </h2>
-      <p class="text-sm md:text-base text-slate-300 max-w-xl mx-auto mb-8 font-normal leading-relaxed">
-        Precios especiales de mayorista, descuentos por volumen y despacho prioritario directo de bodega.
-      </p>
-
-      <!-- Newsletter Form -->
-      <form 
-        onsubmit="event.preventDefault(); app.showToast('¡Bienvenido al Club!', 'Te hemos enviado tu código de 15% al correo.', 'success'); this.reset();" 
-        class="max-w-md mx-auto flex flex-col sm:flex-row gap-3"
-      >
-        <input 
-          type="email" 
-          required 
-          placeholder="Introduce tu correo electrónico..." 
-          class="flex-1 px-5 py-3.5 rounded-2xl bg-slate-800/80 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400"
-        />
-        <button 
-          type="submit" 
-          class="px-7 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-2xl shadow-lg transition-all"
-        >
-          Unirse Gratis
-        </button>
-      </form>
-      <span class="text-[11px] text-slate-500 block mt-3">Sin spam. Puedes cancelar tu suscripción en cualquier momento.</span>
-    </div>
-  </section>
-
-  <!-- 8. FOOTER (Amazon / Nike / El Corte Inglés Megafield) -->
-  <footer class="bg-slate-950 text-slate-400 pt-16 pb-12 border-t border-slate-900 text-xs">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
-        
-        <!-- Brand column -->
-        <div class="col-span-2">
-          <div class="flex items-center gap-2.5 mb-4">
-            <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white">
-              <i data-lucide="layers" class="w-5 h-5"></i>
-            </div>
-            <span class="font-display font-extrabold text-xl text-white">Distribuciones Alumax JT</span>
-          </div>
-          <p class="text-slate-400 text-xs leading-relaxed max-w-sm mb-6">
-            Líderes en comercialización y distribución mayorista de empaques, sellos, tubería PVC, herrajes de seguridad y ferretería industrial con garantía certificada.
-          </p>
-          <div class="flex items-center gap-4 text-slate-400">
-            <a href="#" class="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center hover:text-white transition-colors"><i data-lucide="instagram" class="w-4 h-4"></i></a>
-            <a href="#" class="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center hover:text-white transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a>
-            <a href="#" class="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center hover:text-white transition-colors"><i data-lucide="youtube" class="w-4 h-4"></i></a>
-          </div>
+  <!-- Pie -->
+  <footer class="ax-foot">
+    <div class="ax-wrap">
+      <div class="ax-foot__grid">
+        <div class="ax-foot__brand">
+          <h4>Distribuciones Alumax JT</h4>
+          Comercialización y distribución mayorista de empaques, sellos, tubería PVC, herrajes de seguridad y ferretería industrial.
         </div>
-
-        <!-- Col 1: Colecciones -->
         <div>
-          <h4 class="font-bold text-white uppercase tracking-wider text-xs mb-4">Colecciones</h4>
-          <ul class="space-y-2.5">
-            <li><a href="#catalogo" onclick="app.setCategory('plomeria-pvc')" class="hover:text-white transition-colors">Plomería & PVC</a></li>
-            <li><a href="#catalogo" onclick="app.setCategory('sellos-orings')" class="hover:text-white transition-colors">Sellos & O-Rings</a></li>
-            <li><a href="#catalogo" onclick="app.setCategory('herrajes-seguridad')" class="hover:text-white transition-colors">Herrajes & Manijas</a></li>
-            <li><a href="#catalogo" onclick="app.setCategory('ferreteria-industrial')" class="hover:text-white transition-colors">Ferretería & Construcción</a></li>
-            <li><a href="#catalogo" onclick="app.setCategory('herramientas-agro')" class="hover:text-white transition-colors">Herramientas & Taller</a></li>
+          <h4>Colecciones</h4>
+          <ul>
+            <li><a href="#catalogo" onclick="app.setCategory('sellos-orings')">Sellos y O-rings</a></li>
+            <li><a href="#catalogo" onclick="app.setCategory('plomeria-pvc')">Plomería y PVC</a></li>
+            <li><a href="#catalogo" onclick="app.setCategory('herrajes-seguridad')">Herrajes y manijas</a></li>
+            <li><a href="#catalogo" onclick="app.setCategory('ferreteria-industrial')">Ferretería y construcción</a></li>
+            <li><a href="#catalogo" onclick="app.setCategory('herramientas-agro')">Herramientas y taller</a></li>
           </ul>
         </div>
-
-        <!-- Col 2: Servicio al Cliente -->
         <div>
-          <h4 class="font-bold text-white uppercase tracking-wider text-xs mb-4">Atención al Cliente</h4>
-          <ul class="space-y-2.5">
-            <li><a href="javascript:void(0)" onclick="app.showToast('Seguimiento de Pedido', 'Ingresa tu número de pedido en el panel de usuario.', 'info')" class="hover:text-white transition-colors">Estado de mi Pedido</a></li>
-            <li><a href="javascript:void(0)" onclick="app.showToast('Envíos y Devoluciones', 'Devoluciones gratuitas durante 30 días con recogida en tu puerta.', 'info')" class="hover:text-white transition-colors">Política de Devolución</a></li>
-            <li><a href="javascript:void(0)" onclick="app.showToast('Garantía Oficial', 'Todos los productos cuentan con respaldo directo de fábrica.', 'info')" class="hover:text-white transition-colors">Garantía Oficial</a></li>
-            <li><a href="javascript:void(0)" onclick="app.showToast('Atención al Cliente', 'Contáctanos a ventas@distribucionesalumaxjt.com o a nuestra línea de atención.', 'info')" class="hover:text-white transition-colors">Atención y Ventas</a></li>
-            <li><a href="javascript:void(0)" onclick="app.showToast('Guía de Medidas', 'Consulta las tablas de medidas y calibres oficiales de cada fabricante.', 'info')" class="hover:text-white transition-colors">Guía de Medidas</a></li>
+          <h4>Atención al cliente</h4>
+          <ul>
+            <li><a href="javascript:void(0)" onclick="app.showToast('Estado del pedido', 'Ingresa tu número de pedido en el panel de usuario.', 'info')">Estado de mi pedido</a></li>
+            <li><a href="javascript:void(0)" onclick="app.showToast('Devoluciones', 'Devoluciones gratuitas durante 30 días con recogida en tu puerta.', 'info')">Devoluciones</a></li>
+            <li><a href="javascript:void(0)" onclick="app.showToast('Garantía', 'Todos los productos cuentan con respaldo directo de fábrica.', 'info')">Garantía</a></li>
+            <li><a href="javascript:void(0)" onclick="app.showToast('Atención y ventas', 'Escríbenos a ventas@distribucionesalumaxjt.com.', 'info')">Ventas</a></li>
+            <li><a href="javascript:void(0)" onclick="app.showToast('Guía de medidas', 'Consulta las tablas de medidas y calibres de cada fabricante.', 'info')">Guía de medidas</a></li>
           </ul>
         </div>
-
-        <!-- Col 3: Empresa y Confianza -->
         <div>
-          <h4 class="font-bold text-white uppercase tracking-wider text-xs mb-4">Compromiso Alumax JT</h4>
-          <ul class="space-y-2.5">
-            <li><a href="#" class="hover:text-white transition-colors">Sobre Nosotros</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Ventas al Por Mayor</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Certificado de Calidad</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Aviso Legal & Privacidad</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Términos y Condiciones</a></li>
+          <h4>Alumax JT</h4>
+          <ul>
+            <li><a href="#">Sobre nosotros</a></li>
+            <li><a href="#">Ventas al por mayor</a></li>
+            <li><a href="#">Certificado de calidad</a></li>
+            <li><a href="#">Privacidad</a></li>
+            <li><a href="#">Términos y condiciones</a></li>
           </ul>
-        </div>
-
-      </div>
-
-      <!-- Bottom payments and legal bar -->
-      <div class="pt-8 border-t border-slate-900 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p class="text-slate-500 text-[11px]">
-          © 2026 Distribuciones Alumax JT S.A.S. Todos los derechos reservados. Catálogo industrial de alto rendimiento.
-        </p>
-
-        <!-- Payment icons badges -->
-        <div class="flex items-center gap-2 text-slate-300">
-          <span class="bg-slate-900 px-2.5 py-1 rounded text-[11px] font-bold border border-slate-800">VISA</span>
-          <span class="bg-slate-900 px-2.5 py-1 rounded text-[11px] font-bold border border-slate-800">Mastercard</span>
-          <span class="bg-slate-900 px-2.5 py-1 rounded text-[11px] font-bold border border-slate-800"> Apple Pay</span>
-          <span class="bg-slate-900 px-2.5 py-1 rounded text-[11px] font-bold border border-slate-800">Klarna.</span>
-          <span class="bg-slate-900 px-2.5 py-1 rounded text-[11px] font-bold border border-slate-800">PayPal</span>
         </div>
       </div>
+      <p class="ax-foot__legal">© 2026 Distribuciones Alumax JT S.A.S. Todos los derechos reservados.</p>
     </div>
   </footer>
+
+  </div><!-- /.ax -->
 
   <!-- ================= MODALS & SLIDE-OVERS ================= -->
 

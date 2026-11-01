@@ -1,6 +1,8 @@
 // Sincronización en vivo: inventario-bodega (Supabase) -> tienda.
 // - Actualiza PRECIO y STOCK de los productos existentes (se enlazan por nombre).
 // - Añade a la tienda los productos nuevos creados en la bodega (con precio > 0).
+// - Al revés: un producto nuevo creado desde el panel admin de la tienda (y el cambio de foto)
+//   se guarda también en la bodega.
 // - La tienda NUNCA muestra cuántas unidades hay en la bodega: todos los productos
 //   aparecen como "En Stock / Disponible" (aunque la bodega tenga 0) para que el cliente los pida.
 // No borra productos y no toca el diseño.
@@ -15,13 +17,32 @@
   const norm = (s) => String(s || "").trim().replace(/\s+/g, " ").toLowerCase();
 
   async function fetchInventory() {
-    const url = SUPABASE_URL + "/rest/v1/products?select=id,name,stock,sale_price_vat";
+    const url = SUPABASE_URL + "/rest/v1/products?select=*";
     const res = await fetch(url, {
       headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY },
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Supabase respondió " + res.status);
     return res.json();
+  }
+
+  const isUrl = (u) => /^https?:\/\//i.test(String(u || ""));
+  const HEADERS = { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY, "Content-Type": "application/json" };
+
+  async function rest(method, path, body, extra) {
+    const res = await fetch(SUPABASE_URL + "/rest/v1/" + path, {
+      method: method,
+      headers: Object.assign({}, HEADERS, extra || {}),
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (!res.ok) {
+      const t = await res.text().catch(() => "");
+      const err = new Error("Supabase " + res.status + " " + t);
+      err.status = res.status;
+      err.detail = t;
+      throw err;
+    }
+    return res;
   }
 
   const storeStock = () => BAJO_PEDIDO_STOCK;
@@ -49,7 +70,7 @@
       provider: "",
       colors: [{ name: "Estándar Fabril", hex: "#475569" }],
       sizes: ["Medida Única / Estándar"],
-      images: [DEFAULT_IMAGE],
+      images: [isUrl(r.image_url) ? r.image_url : DEFAULT_IMAGE],
       description: "Producto de alta calidad para ferretería y uso industrial.",
       specs: ["Referencia: " + id.toUpperCase(), stockSpec(), "Línea: " + (cat.name || "Ferretería & Construcción")],
     };
@@ -76,6 +97,11 @@
         if (Array.isArray(p.specs)) {
           p.specs = p.specs.map((s) => (/^Disponibilidad/.test(s) ? stockSpec() : s));
         }
+        changed = true;
+      }
+
+      if (isUrl(r.image_url) && Array.isArray(p.images) && p.images[0] !== r.image_url) {
+        p.images[0] = r.image_url;
         changed = true;
       }
 
@@ -125,12 +151,90 @@
     app.__syncWrapped = true;
   }
 
+  // ---- Tienda -> Bodega ----
+  async function pushNewProduct(prod, realStock) {
+    const name = String(prod.name).trim();
+    // si ya existe en la bodega (mismo nombre) no se duplica
+    const exist = await (await rest("GET", "products?select=id,name")).json();
+    if (exist.some((r) => norm(r.name) === norm(name))) return "existe";
+
+    const maxId = exist.reduce((m, r) => Math.max(m, Number(r.id) || 0), 0);
+    const id = maxId + 1;
+    const priceVat = Math.round(Number(prod.price) * 100) / 100;
+    const row = {
+      id: id,
+      code: "WEB-" + id,
+      name: name,
+      category: "General",
+      stock: realStock,
+      min_stock: 5,
+      purchase_price: 0, // la tienda no conoce el costo: se completa en la bodega
+      sale_price: Math.round((priceVat / 1.19) * 100) / 100,
+      sale_price_vat: priceVat,
+    };
+    const img = prod.images && prod.images[0];
+    try {
+      await rest("POST", "products", isUrl(img) ? Object.assign({ image_url: img }, row) : row, { Prefer: "return=minimal" });
+    } catch (e) {
+      if (isUrl(img) && /image_url/.test(e.detail || "")) {
+        await rest("POST", "products", row, { Prefer: "return=minimal" }); // la columna image_url aún no existe
+      } else {
+        throw e;
+      }
+    }
+    if (realStock > 0) {
+      await rest("POST", "movements", { type: "IN", product_name: name, qty: realStock, comment: "Alta desde la tienda web", user_role: "TIENDA WEB" }, { Prefer: "return=minimal" }).catch(() => {});
+    }
+    return "creado";
+  }
+
+  async function pushImage(name, url) {
+    if (!isUrl(url)) return;
+    try {
+      await rest("PATCH", "products?name=eq." + encodeURIComponent(name), { image_url: url }, { Prefer: "return=minimal" });
+    } catch (e) {
+      console.warn("[sync] La foto no se guardó en la bodega (falta la columna image_url):", e.message);
+    }
+  }
+
+  function wrapAdminActions() {
+    if (!app || app.__adminWrapped) return;
+    app.__adminWrapped = true;
+
+    const origNew = app.saveNewProduct.bind(app);
+    app.saveNewProduct = function (ev) {
+      const before = this.products.length;
+      const realStock = parseInt((document.getElementById("new-prod-stock") || {}).value) || 10;
+      const res = origNew(ev);
+      if (this.products.length > before) {
+        const prod = this.products[0];
+        prod.stock = BAJO_PEDIDO_STOCK; // la tienda nunca muestra la cantidad
+        prod.specs = (prod.specs || []).map((s) => (/^Disponibilidad/.test(s) ? stockSpec() : s));
+        pushNewProduct(prod, realStock)
+          .then((r) => this.showToast("Bodega actualizada", r === "creado" ? "El producto también se creó en la bodega." : "Ese producto ya existía en la bodega.", "success"))
+          .catch((e) => this.showToast("No se guardó en la bodega", e.message.slice(0, 120), "warning"));
+      }
+      return res;
+    };
+
+    const origImg = app.saveProductImage.bind(app);
+    app.saveProductImage = function () {
+      const id = this.editingProductId;
+      const newUrl = ((document.getElementById("change-img-url-input") || {}).value || "").trim();
+      const res = origImg();
+      const prod = this.products.find((p) => p.id === id);
+      if (prod && newUrl) pushImage(prod.name, newUrl);
+      return res;
+    };
+  }
+
   async function sync() {
     try {
       const rows = await fetchInventory();
       const changed = applyToProducts(rows);
       whenAppReady(() => {
         wrapRegionUpdate();
+        wrapAdminActions();
         if (changed) {
           app.products = [...PRODUCTS];
           app.applyFilters();

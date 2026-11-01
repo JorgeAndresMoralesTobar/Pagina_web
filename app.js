@@ -228,18 +228,9 @@ class StoreApp {
       const isActive = this.currentCategory === cat.id;
       const count = counts[cat.id] || 0;
       return `
-        <button 
-          onclick="app.setCategory('${cat.id}')"
-          class="category-pill flex items-center gap-2 px-5 py-2.5 rounded-full text-xs md:text-sm font-semibold tracking-wide transition-all duration-200 border whitespace-nowrap ${
-            isActive 
-              ? 'active' 
-              : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400 hover:bg-slate-50'
-          }"
-        >
+        <button onclick="app.setCategory('${cat.id}')" class="category-pill ${isActive ? 'active' : ''}">
           <span>${cat.name}</span>
-          <span class="text-[10px] px-2 py-0.5 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}">
-            ${count}
-          </span>
+          <span class="pill-count">${count}</span>
         </button>
       `;
     }).join('');
@@ -321,6 +312,12 @@ class StoreApp {
     const grid = document.getElementById('products-grid');
     if (!grid) return;
 
+    const countEl0 = document.getElementById('products-count');
+    if (countEl0) {
+      const n = this.filteredProducts.length;
+      countEl0.textContent = `${n} producto${n === 1 ? '' : 's'} disponible${n === 1 ? '' : 's'}`;
+    }
+
     if (this.filteredProducts.length === 0) {
       grid.innerHTML = `
         <div class="col-span-full py-16 text-center">
@@ -343,146 +340,74 @@ class StoreApp {
       return;
     }
 
-    grid.innerHTML = this.filteredProducts.map(product => {
+    const filterKey = [this.currentCategory, this.searchQuery, this.sortBy].join('|');
+    if (this._filterKey !== filterKey) {
+      this._filterKey = filterKey;
+      this.visibleCount = 24;
+    }
+    const visible = this.filteredProducts.slice(0, this.visibleCount || 24);
+    const remaining = this.filteredProducts.length - visible.length;
+
+    grid.innerHTML = visible.map(product => {
       const isFav = this.wishlist.includes(product.id);
-      
-      // Badges
-      let badgeHtml = '';
+
+      let tagHtml = '';
       if (product.isFlashDeal) {
-        badgeHtml = `<span class="badge-flash px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-sm"><i data-lucide="zap" class="w-3 h-3"></i> ${product.discount} FLASH</span>`;
+        tagHtml = `<span class="pc-tag pc-tag--flash">Oferta ${product.discount}</span>`;
       } else if (product.isBestSeller) {
-        badgeHtml = `<span class="badge-gold px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-sm"><i data-lucide="award" class="w-3 h-3"></i> TOP VENTAS</span>`;
+        tagHtml = `<span class="pc-tag">Más vendido</span>`;
       } else if (product.isNew) {
-        badgeHtml = `<span class="badge-new px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-sm"><i data-lucide="sparkles" class="w-3 h-3"></i> NOVEDAD</span>`;
+        tagHtml = `<span class="pc-tag pc-tag--new">Nuevo</span>`;
       }
 
-      // Swatches preview
-      const swatchesHtml = product.colors.map(c => `
-        <span 
-          class="w-3.5 h-3.5 rounded-full border border-slate-300 inline-block shadow-sm" 
-          style="background-color: ${c.hex};" 
-          title="${c.name}"
-        ></span>
-      `).join('');
+      const showOld = product.oldPrice && product.oldPrice > product.price;
 
       return `
-        <div class="product-card group relative bg-white rounded-3xl overflow-hidden border border-slate-100 flex flex-col justify-between" id="prod-${product.id}">
-          <!-- Top Badges & Actions -->
-          <div class="relative w-full aspect-square bg-[#F8FAFC] overflow-hidden flex items-center justify-center p-6">
-            <div class="absolute top-4 left-4 z-10 flex flex-col gap-1.5 items-start">
-              ${badgeHtml}
-            </div>
-
-            <!-- Heart Wishlist Button -->
-            <button 
+        <article class="product-card" id="prod-${product.id}">
+          <div class="pc-media" onclick="app.openQuickView('${product.id}')">
+            ${tagHtml}
+            <button
               onclick="event.stopPropagation(); app.toggleWishlist('${product.id}')"
-              class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-slate-700 hover:text-red-500 shadow-sm transition-all duration-200 hover:scale-110"
-              title="Añadir a favoritos"
+              class="pc-fav"
+              aria-label="Añadir a favoritos"
             >
-              <i data-lucide="heart" class="w-4 h-4 ${isFav ? 'fill-red-500 text-red-500' : ''}"></i>
+              <i data-lucide="heart" style="${isFav ? 'fill:#d93042;color:#d93042' : ''}"></i>
             </button>
-
-            <!-- Product Main Image -->
-            <img 
-              src="${product.images[0]}" 
-              alt="${product.name}" 
-              loading="lazy"
-              class="card-img w-full h-full object-contain mix-blend-multiply drop-shadow-md cursor-pointer"
-              onclick="app.openQuickView('${product.id}')"
-            />
-
-            <!-- Quick Action Floating Bar (Desktop) -->
-            <div class="quick-actions absolute bottom-4 inset-x-4 z-10 flex gap-2">
-              <button 
-                onclick="event.stopPropagation(); app.openQuickView('${product.id}')"
-                class="flex-1 py-2.5 px-3 bg-white/95 backdrop-blur-md hover:bg-slate-900 hover:text-white text-slate-800 text-xs font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-1.5"
-              >
-                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                Vista Rápida
-              </button>
-              <button 
-                onclick="event.stopPropagation(); app.openChangeImageModal('${product.id}')"
-                class="py-2.5 px-3 bg-blue-50/95 hover:bg-blue-600 hover:text-white text-blue-700 text-xs font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-1 ${this.isAdmin() ? '' : 'hidden'}"
-                title="Cambiar foto de este producto"
-              >
-                <i data-lucide="camera" class="w-3.5 h-3.5"></i>
-              </button>
-            </div>
+            <img src="${product.images[0]}" alt="${product.name}" loading="lazy" class="card-img" />
+            <button
+              onclick="event.stopPropagation(); app.openChangeImageModal('${product.id}')"
+              class="pc-photo ${this.isAdmin() ? '' : 'hidden'}"
+              aria-label="Cambiar la foto de este producto"
+            >
+              <i data-lucide="camera"></i>
+            </button>
           </div>
 
-          <!-- Product Details Body -->
-          <div class="p-5 flex flex-col flex-1 justify-between">
-            <div>
-              <div class="flex items-center justify-between text-xs text-slate-400 mb-1.5">
-                <span class="uppercase tracking-widest font-semibold">${product.categoryName}</span>
-                <div class="flex items-center gap-1">
-                  ${swatchesHtml}
-                </div>
+          <div class="pc-body">
+            <span class="pc-cat">${product.categoryName}</span>
+            <h3 class="pc-name" onclick="app.openQuickView('${product.id}')" title="${product.name}">${product.name}</h3>
+            <div class="pc-foot">
+              <div class="pc-price">
+                <strong>${this.formatPrice(product.price)}</strong>
+                ${showOld ? `<s>${this.formatPrice(product.oldPrice)}</s>` : ''}
               </div>
-
-              <!-- Title -->
-              <h3 
-                onclick="app.openQuickView('${product.id}')" 
-                class="font-bold text-slate-900 text-base leading-snug hover:text-blue-600 cursor-pointer transition-colors line-clamp-1 mb-1"
-                title="${product.name}"
-              >
-                ${product.name}
-              </h3>
-
-              <p class="text-xs text-slate-500 line-clamp-2 mb-3">
-                ${product.subtitle}
-              </p>
-
-              <!-- Reviews & Stock -->
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center gap-1 text-xs">
-                  <div class="flex text-amber-400">
-                    <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400"></i>
-                  </div>
-                  <span class="font-bold text-slate-700">${product.rating}</span>
-                  <span class="text-slate-400">(${product.reviewsCount})</span>
-                </div>
-
-                ${product.stock <= 5 ? `
-                  <span class="text-[11px] font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-                    ¡Quedan ${product.stock}!
-                  </span>
-                ` : `
-                  <span class="text-[11px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    En Stock
-                  </span>
-                `}
-              </div>
-            </div>
-
-            <!-- Price & Buy Button -->
-            <div class="pt-3 border-t border-slate-100 flex items-center justify-between mt-auto">
-              <div>
-                <div class="flex items-baseline gap-2">
-                  <span class="text-xl font-extrabold text-slate-900 font-display">${this.formatPrice(product.price)}</span>
-                  ${product.oldPrice ? `
-                    <span class="text-xs font-semibold text-slate-400 line-through">${this.formatPrice(product.oldPrice)}</span>
-                  ` : ''}
-                </div>
-                <span class="text-[10px] text-slate-400 block">IVA incl. | Envío Global</span>
-              </div>
-
-              <button 
-                onclick="event.stopPropagation(); app.quickAddToCart('${product.id}')"
-                class="w-11 h-11 bg-slate-900 hover:bg-blue-600 text-white rounded-2xl flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-blue-500/30 hover:scale-105 active:scale-95"
-                title="Añadir a la cesta"
-              >
-                <i data-lucide="shopping-bag" class="w-5 h-5"></i>
-              </button>
+              <button onclick="event.stopPropagation(); app.quickAddToCart('${product.id}')" class="pc-add" aria-label="Añadir ${product.name} a la cesta">Añadir</button>
             </div>
           </div>
-        </div>
+        </article>
       `;
-    }).join('');
+    }).join('') + (remaining > 0 ? `
+      <div class="ax-more">
+        <button onclick="app.showMore()" class="ax-btn ax-btn--dark">Mostrar más productos</button>
+        <span>Quedan ${remaining} por ver</span>
+      </div>` : '');
 
     this.refreshIcons();
+  }
+
+  showMore() {
+    this.visibleCount = (this.visibleCount || 24) + 24;
+    this.renderProducts();
   }
 
   resetFilters() {
