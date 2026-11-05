@@ -253,13 +253,12 @@ class StoreApp {
 
     // Filter by Search Query
     if (this.searchQuery.trim() !== '') {
-      const query = this.searchQuery.toLowerCase().trim();
-      result = result.filter(p => 
-        p.name.toLowerCase().includes(query) ||
-        p.subtitle.toLowerCase().includes(query) ||
-        p.categoryName.toLowerCase().includes(query) ||
-        p.description.toLowerCase().includes(query)
-      );
+      const fold = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      const words = fold(this.searchQuery).trim().split(/\s+/).filter(Boolean);
+      result = result.filter(p => {
+        const hay = fold(p.name + ' ' + p.subtitle + ' ' + p.categoryName + ' ' + p.description);
+        return words.every(w => hay.includes(w));
+      });
     }
 
     // Filter by Price
