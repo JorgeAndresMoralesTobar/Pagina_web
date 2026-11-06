@@ -36,6 +36,4 @@
 .lg-consent .lg-bad{color:#b3261e;font-size:13px;margin:2px 0 0 32px}
 .lg-consent .lg-row.bad label{color:#b3261e}
 .lg-consent small{color:#6e6e73;font-size:12.5px}
-/* Aviso de imagen de referencia en las tarjetas */
-.pc-media{position:relative}
-.pc-media::after{content:"Imagen de referencia";position:absolute;left:8px;bottom:6px;font:600 10px/1 -apple-system,Segoe UI,Arial,sans-serif;color:#475569;background:rgba(255,255,255,.85);padding:3px 6px;border-radius:6px;pointer-events:none}
+#lg-ck .lg-opts[hidden]{display:none}
