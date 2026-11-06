@@ -4,6 +4,7 @@
   "use strict";
   var C = window.LEGAL_CONFIG || {};
   var KEY_CK = "ajt_cookie_consent", KEY_LOG = "ajt_consent_log";
+  var HAS_REEMBOLSO = true;
   var DOCS = { terminos: "/terminos.html", privacidad: "/privacidad.html", cookies: "/cookies.html", reembolso: "/reembolso.html" };
   var NAMES = { terminos: "Términos y Condiciones", privacidad: "Política de Privacidad", cookies: "Política de Cookies", reembolso: "Política de Retracto, Devoluciones y Garantía" };
 
@@ -51,7 +52,7 @@
       return '<div class="lg-consent">' +
         row("terms", 'He leído y acepto los <a href="' + DOCS.terminos + '" target="_blank" rel="noopener">Términos y Condiciones</a>.') +
         row("privacy", 'Autorizo el tratamiento de mis datos personales según la <a href="' + DOCS.privacidad + '" target="_blank" rel="noopener">Política de Privacidad</a>.') +
-        '<small>Antes de pagar, consulta la <a href="' + DOCS.reembolso + '" target="_blank" rel="noopener">política de retracto, devoluciones y garantía</a>. Puedes ejercer tus derechos escribiendo a ' + esc(C.correo || "nuestro correo de atención") + ".</small></div>";
+        '<small>Antes de pagar, consulta la ' + (HAS_REEMBOLSO ? '<a href="' + DOCS.reembolso + '" target="_blank" rel="noopener">política de retracto, devoluciones y garantía</a>' : 'política de retracto, devoluciones y garantía') + '. Puedes ejercer tus derechos escribiendo a ' + esc(C.correo || "nuestro correo de atención") + ".</small></div>";
     },
 
     // ----- borrar datos guardados en este dispositivo -----
